@@ -1,0 +1,6 @@
+# fichero de eclipse a ignorar
+
+/target/
+/.classpath
+/.project
+/.settings
