@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 /**
  * Ejemplo básico para buscar una persona por su Id <br>
@@ -18,38 +19,42 @@ public class BuscarPersonaPorId {
 
 	public static void main(String[] args) throws SQLException {
 		
-		System.out.println("Listado de personas");
+		
 		final String SQL = "SELECT id, nombre, nif, edad FROM persona WHERE id = ? ; ";
 		
 		// recursos autoclosables
 		try( Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/txurdi?useSSL=false", "root", "root");
 			 PreparedStatement pst = con.prepareStatement(SQL);
-			 	){
+			 Scanner sc = new Scanner(System.in);
+			){
 			
-			pst.setInt(1, 3);
+			// solicitar id
+			System.out.println("Dime el ID de la persona a buscar:");
+			int id = Integer.parseInt(sc.nextLine());
 			
-			//ResultSet rs = pst.executeQuery();
+			// sustituimmos el 1º ? por la variable id
+			pst.setInt(1, id);
 			
-			System.out.printf("----------------------------------------------------------------------------------- \n");
-			System.out.printf("----- persona  -------------------------------------------------------------------- \n");
-			System.out.printf("----------------------------------------------------------------------------------- \n");
-			System.out.printf("%-5s %-50s %-9s %-2s \n","id", "nombre","nif","edad");
-			System.out.printf("----------------------------------------------------------------------------------- \n");
-			
-			//bucle para listar
-			while (rs.next() ) {
-			
-				int id = rs.getInt("id");
-				String nombre = rs.getString("nombre");
-				String nif = rs.getString("nif");
-				int edad = rs.getInt("edad");
+			try( ResultSet rs = pst.executeQuery() ) {
+								
+				//bucle para listar
+				if (rs.next() ) {
 				
-				System.out.printf("%-5s %-50s %-9s %-2s \n",id, nombre,nif,edad);
+					id = rs.getInt("id");
+					String nombre = rs.getString("nombre");
+					String nif = rs.getString("nif");
+					int edad = rs.getInt("edad");
+					
+					System.out.printf("%-5s %-10s %-9s %-2s \n",id, nombre,nif,edad);
+					
+				}else {
+					System.out.println("Lo sentimos pero no existe la persona");
+				}
 				
-			}//while
-			System.out.printf("---------------------------------------------------------------------------------- \n");		
+			}// 2º try		
 			
-		}// try
+			
+		}// 1ºtry
 		
 
 	}
