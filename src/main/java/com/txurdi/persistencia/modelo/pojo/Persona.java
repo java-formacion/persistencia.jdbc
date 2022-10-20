@@ -6,15 +6,25 @@ public class Persona implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private int id;
 	private String nif;
 	private String nombre;
 	private int edad;
 	
 	public Persona() {
 		super();
+		this.id = 0;
 		this.nif = "";
 		this.nombre = "";
 		this.edad = 0;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public Persona(String nombre, int edad) {
