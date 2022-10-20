@@ -73,7 +73,7 @@ public class PersonaDAOTest {
 	@After
 	public void tearDown() throws Exception {
 		
-		dao.delete(pepe.getId());
+		assertTrue(dao.delete(pepe.getId()));
 	}
 
 	
@@ -130,20 +130,7 @@ public class PersonaDAOTest {
 		assertEquals( nombre, pepa.getNombre());
 		assertEquals( nif, pepa.getNif());
 		assertEquals( edad, pepa.getEdad());
-		
-		// comprobar nif unico		
-		try {
-			pepa.setNif(PEPE_NIF);
-			dao.update(pepa);
-			fail("deberia haber lanzado excepcion de NIF UNICO");
-		}catch (Exception e) {
 			
-			//si la lanza la excepcion, funciona correctamente
-			assertTrue(true);
-		}	
-		
-		
-		
 	}
 
 	/**
@@ -174,7 +161,13 @@ public class PersonaDAOTest {
 	@Test
 	public void testDelete() throws Exception {
 		
-		assertTrue( "Se debria poder eliminar a pepe", dao.delete(pepe.getId()));
+		// insertar persona nueva
+		Persona pEliminar = new Persona();
+		pEliminar.setNif("123456");
+		dao.insert(pEliminar);		
+		assertTrue( "Se deberia poder eliminar la nueva persona", dao.delete(pEliminar.getId()));
+		
+		
 		assertFalse( "No se puede eliminar algo que no existe id == 0", dao.delete(0));
 		
 	}
