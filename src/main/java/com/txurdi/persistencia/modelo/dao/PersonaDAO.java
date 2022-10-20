@@ -36,24 +36,17 @@ public class PersonaDAO implements Singleton, Crudable<Persona> {
 
 		ArrayList<Persona> regitros = new ArrayList<Persona>();
 
-		try (Connection con = ConnectionManager.open();
+		try (
+				Connection con = ConnectionManager.open();
 				PreparedStatement pst = con.prepareStatement(SQL_FIND_ALL);
-				ResultSet rs = pst.executeQuery();) {
+				ResultSet rs = pst.executeQuery();
+			) {
 
-			while (rs.next()) {
+				while (rs.next()) {
+					regitros.add(mapper(rs));
+				}
 
-				Persona p = new Persona();
-				p.setId(rs.getInt("id"));
-				p.setNombre(rs.getNString("nombre"));
-				p.setNif(rs.getString("nif"));
-				p.setEdad(rs.getInt("edad"));
-				// TODO mapper
-
-				regitros.add(p);
-			}
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+		} catch (SQLException e) {			
 			e.printStackTrace();
 		}
 
@@ -64,27 +57,20 @@ public class PersonaDAO implements Singleton, Crudable<Persona> {
 	public Persona findById(int id) {
 		Persona registro = null;
 
-		try (Connection con = ConnectionManager.open(); PreparedStatement pst = con.prepareStatement(SQL_FIN_BY_ID);
-
+		try (
+				Connection con = ConnectionManager.open(); 
+				PreparedStatement pst = con.prepareStatement(SQL_FIN_BY_ID);
 		) {
 
 			pst.setInt(1, id);
 
 			try (ResultSet rs = pst.executeQuery()) {
 				while (rs.next()) {
-
-					registro = new Persona();
-					registro.setId(rs.getInt("id"));
-					registro.setNombre(rs.getNString("nombre"));
-					registro.setNif(rs.getString("nif"));
-					registro.setEdad(rs.getInt("edad"));
-					// TODO mapper
-
+					registro = mapper(rs);
 				}
 			}
 
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+		} catch (SQLException e) {			
 			e.printStackTrace();
 		}
 
@@ -94,8 +80,9 @@ public class PersonaDAO implements Singleton, Crudable<Persona> {
 	@Override
 	public void update(Persona pojo) throws Exception {
 
-		try (Connection con = ConnectionManager.open(); PreparedStatement pst = con.prepareStatement(SQL_UPDATE);
-
+		try (
+				Connection con = ConnectionManager.open(); 
+				PreparedStatement pst = con.prepareStatement(SQL_UPDATE);
 		) {
 
 			// sustituimmos intertogantes por valores
@@ -113,47 +100,65 @@ public class PersonaDAO implements Singleton, Crudable<Persona> {
 	@Override
 	public void insert(Persona pojo) throws Exception {
 
-		try (Connection con = ConnectionManager.open(); 
-			 PreparedStatement pst = con.prepareStatement(SQL_INSERT, PreparedStatement.RETURN_GENERATED_KEYS );
+		try (
+				Connection con = ConnectionManager.open(); 
+				PreparedStatement pst = con.prepareStatement(SQL_INSERT, PreparedStatement.RETURN_GENERATED_KEYS );
 			) {
 
-			// sustituimmos intertogantes por valores
-			pst.setString(1, pojo.getNombre());
-			pst.setString(2, pojo.getNif());
-			pst.setInt(3, pojo.getEdad());
-
-			// ejecutar pst y nos retorna un int == affetedRows
-			int affectedRows = pst.executeUpdate();
-
-			// recuperar id autogenerado
-			if (affectedRows == 1) {
-				try (ResultSet rs = pst.getGeneratedKeys()) {
-					if (rs.next()) {
-						int id = rs.getInt(1);
-						pojo.setId(id);
+				// sustituimmos intertogantes por valores
+				pst.setString(1, pojo.getNombre());
+				pst.setString(2, pojo.getNif());
+				pst.setInt(3, pojo.getEdad());
+	
+				// ejecutar pst y nos retorna un int == affetedRows
+				int affectedRows = pst.executeUpdate();
+	
+				// recuperar id autogenerado
+				if (affectedRows == 1) {
+					try (ResultSet rs = pst.getGeneratedKeys()) {
+						if (rs.next()) {
+							int id = rs.getInt(1);
+							pojo.setId(id);
+						}
 					}
-				}
-
-			}//if
-
+	
+				}//if
 		}//try
-
 	}
 
 	@Override
 	public boolean delete(int id) throws Exception {
 		boolean eliminado = false;
 		
-		try (Connection con = ConnectionManager.open(); PreparedStatement pst = con.prepareStatement(SQL_DELETE);) {
+		try (
+				Connection con = ConnectionManager.open(); 
+				PreparedStatement pst = con.prepareStatement(SQL_DELETE);
+			) {
 			
-			pst.setInt(1, id);
-			int affectedRows = pst.executeUpdate();
-			if ( affectedRows == 1 ) {
-				eliminado = true;
-			}			
-		}
-		
+				pst.setInt(1, id);				
+				if ( pst.executeUpdate() == 1 ) {
+					eliminado = true;
+				}			
+		}		
 		return eliminado;
 	}
 
+	/**
+	 * Mapea los datos de un registro del ResultSet a un Pojo
+	 * @param rs ResultSet
+	 * @return Persona
+	 * @throws SQLException
+	 */
+	private Persona mapper(ResultSet rs) throws SQLException {
+		
+		Persona p = new Persona();
+		
+		p.setId(rs.getInt("id"));
+		p.setNombre(rs.getNString("nombre"));
+		p.setNif(rs.getString("nif"));
+		p.setEdad(rs.getInt("edad"));
+		
+		return p;
+	}
+	
 }
