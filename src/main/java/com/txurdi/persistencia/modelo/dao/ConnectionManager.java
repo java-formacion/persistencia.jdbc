@@ -6,8 +6,6 @@ import java.sql.SQLException;
 
 
 public class ConnectionManager {
-
-	private static Connection CONEXION = null;
 	
 	//parametros de conexion
 	private final static String URL = "jdbc:mysql://localhost:3306/txurdi?useSSL=false";
@@ -15,7 +13,7 @@ public class ConnectionManager {
 	private final static String PASS = "root";
 	
 	
-	static Connection open() throws SQLException {		
+	static public Connection open() throws SQLException {		
 		Connection con = DriverManager.getConnection(URL, USER, PASS);			
 		return con;	
 	}	
