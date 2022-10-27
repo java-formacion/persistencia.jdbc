@@ -1,11 +1,12 @@
 package com.txurdi.persistencia.modelo.pojo;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Producto {
+public class Producto implements Serializable  {
 
-	private static final long serialVersionUID = 5452816664057554386L;
-
+	private static final long serialVersionUID = 1L;
+	
 	private Long id;
 	private String nombre;
 	private String descripcion;
