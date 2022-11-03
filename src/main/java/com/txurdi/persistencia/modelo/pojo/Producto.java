@@ -31,6 +31,15 @@ public class Producto implements Serializable  {
 	private String errorPrecioUnidadMedida;
 	private String errorCantidad;
 	private String errorDepartamento;
+	
+	public Producto() {
+		super();
+		this.id = (long) 0;
+		this.cantidad = 0;
+		this.correcto = false;
+		//TODO inicializar resto de atributos
+	}
+
 
 	public Producto(String id, String nombre, String descripcion, String urlImagen, String precio, String descuento,
 			String unidadMedida, String precioUnidadMedida, String cantidad) {
@@ -60,6 +69,7 @@ public class Producto implements Serializable  {
 		setPrecioUnidadMedida(precioUnidadMedida);
 		setCantidad(cantidad);
 	}
+
 
 	private void setCantidad(String cantidad) {
 		try {
