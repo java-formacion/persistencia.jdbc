@@ -84,14 +84,32 @@ END ;;
 DELIMITER ;
 
 
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `productos_insertar`(p_nombre VARCHAR(150), p_descripcion TEXT(1000), p_url_imagen VARCHAR(45), p_precio DECIMAL(20,2), p_descuento INT, p_unidad_medida VARCHAR(45), p_precio_unidad_medida DECIMAL(20,2), p_cantidad INT, p_departamentos_id INT)
+DROP PROCEDURE IF EXISTS `productos_insertar`;
+DELIMITER //
+CREATE PROCEDURE `productos_insertar`(
+	IN `p_nombre` VARCHAR(150),
+	IN `p_descripcion` TEXT(1000),
+	IN `p_url_imagen` VARCHAR(45),
+	IN `p_precio` DECIMAL(20,2),
+	IN `p_descuento` INT,
+	IN `p_unidad_medida` VARCHAR(45),
+	IN `p_precio_unidad_medida` DECIMAL(20,2),
+	IN `p_cantidad` INT,
+	IN `p_departamentos_id` INT,
+	OUT `p_id` INT
+)
 BEGIN
-INSERT INTO productos 
-	(nombre, descripcion, url_imagen, precio, descuento, unidad_medida, precio_unidad_medida, cantidad, departamentos_id) 
-    VALUES 
-	(p_nombre, p_descripcion, p_url_imagen, p_precio, p_descuento, p_unidad_medida, p_precio_unidad_medida, p_cantidad, p_departamentos_id) ;
-END ;;
+
+	-- insert
+	INSERT INTO productos 
+		(nombre, descripcion, url_imagen, precio, descuento, unidad_medida, precio_unidad_medida, cantidad, departamentos_id) 
+	    VALUES 
+		(p_nombre, p_descripcion, p_url_imagen, p_precio, p_descuento, p_unidad_medida, p_precio_unidad_medida, p_cantidad, p_departamentos_id) ;
+	
+	-- retiornar el id generado
+	SET p_id = LAST_INSERT_ID();
+		
+END//
 DELIMITER ;
 
 
@@ -121,11 +139,29 @@ SELECT * FROM productos p JOIN departamentos d ON p.departamentos_id = d.id WHER
 END ;;
 DELIMITER ;
 
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `productos_obtener_todos`()
+DROP PROCEDURE IF EXISTS `productos_obtener_todos`;
+DELIMITER //
+CREATE PROCEDURE `productos_obtener_todos`()
 BEGIN
-SELECT * FROM productos p JOIN departamentos d ON p.departamentos_id = d.id WHERE p.activo = 1;
-END ;;
+
+	SELECT 
+		 p.id,
+		 p.nombre,
+		 p.descripcion,
+		 p.url_imagen,
+		 p.precio,
+		 p.descuento,
+		 p.unidad_medida,
+		 p.precio_unidad_medida,
+		 p.cantidad,
+		 p.departamentos_id,
+		 p.activo
+	FROM productos p JOIN departamentos d ON p.departamentos_id = d.id 
+	WHERE p.activo = 1
+	ORDER BY p.id DESC
+	LIMIT 500;
+
+END//
 DELIMITER ;
 
 
