@@ -37,7 +37,20 @@ public class Producto implements Serializable  {
 		this.id = (long) 0;
 		this.cantidad = 0;
 		this.correcto = false;
+		
+		Departamento dep = new Departamento((long) 1, "","");
+		setDepartamento(dep);
+		
 		//TODO inicializar resto de atributos
+	}
+	
+
+	public Producto(String nombre) {
+		this();
+		setNombre(nombre);
+		setDescuento(0);
+		setPrecio(new BigDecimal(0));
+		
 	}
 
 

@@ -3,6 +3,7 @@ package com.txurdi.persistencia.modelo.dao;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.Types;
 import java.util.ArrayList;
 
 //TODO mejorar PAs, alguno tiene * y la insert no actulizaza el ID
@@ -26,6 +27,7 @@ public class ProductoDAO implements Crudable<Producto> {
 	
 	// SQLs con las llamadas a los PAs
 	String SQL_SELECT_ALL = "{call productos_obtener_todos()}";
+	String SQL_INSERT = "{CALL productos_insertar(?,?,?,?,?,?,?,?,?,?)}";
 	
 	// constructor privado
 	private ProductoDAO() {
@@ -71,8 +73,32 @@ public class ProductoDAO implements Crudable<Producto> {
 
 	@Override
 	public void insert(Producto pojo) throws Exception {
-		// TODO Auto-generated method stub
 		
+		try (	Connection con = ConnectionManager.open();
+				CallableStatement cs = con.prepareCall(SQL_INSERT);				
+			) {
+						
+			// setear parametros de entrada
+			cs.setString(1, pojo.getNombre());
+			cs.setString(2, pojo.getDescripcion());
+			cs.setString(3, pojo.getUrlImagen());
+			cs.setBigDecimal(4, pojo.getPrecio());
+			cs.setInt(5, pojo.getDescuento());
+			cs.setString(6, pojo.getUnidadMedida());
+			cs.setBigDecimal(7, pojo.getPrecioUnidadMedida());
+			cs.setInt(8, pojo.getCantidad());
+			cs.setLong(9, pojo.getDepartamento().getId());
+			
+			// registar parametos de salida
+			cs.registerOutParameter(10, Types.INTEGER);
+						
+			// ejecutar el PA			
+			cs.execute();			
+			
+			// recuperar y setear id al producto
+			pojo.setId( cs.getLong(10) );
+			
+		} 		
 	}
 
 	@Override
